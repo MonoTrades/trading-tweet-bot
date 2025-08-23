@@ -48,8 +48,26 @@ insights = [
 ]
 hashtags = ["#Trading", "#Crypto", "#Markets"]
 
+# Generate tweet
 def generate_trading_tweet():
     today = datetime.now().strftime('%Y-%m-%d')
     topic = random.choice(topics)
     insight = random.choice(insights)
-    tags = " ".join(random.sample(ha
+    tags = " ".join(random.sample(hashtags, 2))
+    tweet = f"{topic} Tip: {insight} {tags} {today}"
+    print("Generated tweet:", tweet)
+    return tweet[:280]
+
+# Post tweet
+def post_tweet():
+    tweet_content = generate_trading_tweet()
+    try:
+        response = client.create_tweet(text=tweet_content)
+        print("Tweet posted successfully!")
+        return response
+    except Exception as e:
+        print("Error posting tweet:", e)
+        return None
+
+post_tweet()
+print("=== Bot Finished ===")
