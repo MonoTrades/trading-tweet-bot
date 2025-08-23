@@ -1,7 +1,3 @@
-print("API_KEY:", API_KEY[:4] if API_KEY else "None")
-print("ACCESS_TOKEN:", ACCESS_TOKEN[:4] if ACCESS_TOKEN else "None")
-
-
 import tweepy
 import random
 import requests
@@ -14,6 +10,9 @@ API_SECRET = os.getenv("ydSXJ8c3WjFOhnp2Yjf99Hd0cgFlPZxIQbgUcf7e6rQb6DzFQM")
 ACCESS_TOKEN = os.getenv("112135868-gOiEnrwm2RHnTdkUie95hoHMPOmcAYX2MembnQTb")
 ACCESS_TOKEN_SECRET = os.getenv("lMFqn040P95Q6PzHu7XlQZxwo3jWLC74vbmG3HuVYiLW5")
 BEARER_TOKEN = os.getenv("AAAAAAAAAAAAAAAAAAAAADBr3gEAAAAAtWkNuj9uHiea8Iy67YCHLQm44uA%3DP0KgD8RgDYJtAw7BT4C0DNsfqV5h9xWTLcCXnDNVnvgKkqJJyZ")
+
+print("API_KEY:", API_KEY[:4] if API_KEY else "None")
+print("ACCESS_TOKEN:", ACCESS_TOKEN[:4] if ACCESS_TOKEN else "None")
 
 # Authenticate with X API v2
 client = tweepy.Client(
