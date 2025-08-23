@@ -1,3 +1,7 @@
+print("API_KEY:", API_KEY[:4] if API_KEY else "None")
+print("ACCESS_TOKEN:", ACCESS_TOKEN[:4] if ACCESS_TOKEN else "None")
+
+
 import tweepy
 import random
 import requests
