@@ -3,7 +3,7 @@ name: Trading Bot
 on:
   schedule:
     - cron: "0 * * * *"   # every 1 hour
-  workflow_dispatch:       # manual trigger
+  workflow_dispatch:       # manual run
 
 jobs:
   run-bot:
@@ -21,24 +21,9 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      # Temporary debug step to check env variables
-      - name: Debug environment variables
-        run: |
-          echo "API_KEY is set: $API_KEY"
-          echo "API_SECRET is set: $API_SECRET"
-          echo "ACCESS_TOKEN is set: $ACCESS_TOKEN"
-          echo "ACCESS_TOKEN_SECRET is set: $ACCESS_TOKEN_SECRET"
-          echo "BEARER_TOKEN is set: $BEARER_TOKEN"
-        shell: bash
-        env:
-          API_KEY: ${{ secrets.API_KEY }}
-          API_SECRET: ${{ secrets.API_SECRET }}
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
-
       - name: Run bot
-        run: python bot.py
+        run: python bot.py "$API_KEY" "$API_SECRET" "$ACCESS_TOKEN" "$ACCESS_TOKEN_SECRET" "$BEARER_TOKEN"
+        shell: bash
         env:
           API_KEY: ${{ secrets.API_KEY }}
           API_SECRET: ${{ secrets.API_SECRET }}
