@@ -2,12 +2,13 @@ name: Trading Bot
 
 on:
   schedule:
-    - cron: "0 * * * *"   # every 1 hour, at minute 0
+    - cron: "0 * * * *"   # every 1 hour
   workflow_dispatch:       # allows manual runs
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -19,6 +20,14 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+
+      - name: Check secrets (debug)
+        run: |
+          echo "API_KEY is set: ${{ secrets.API_KEY != '' }}"
+          echo "ACCESS_TOKEN is set: ${{ secrets.ACCESS_TOKEN != '' }}"
+          echo "ACCESS_TOKEN_SECRET is set: ${{ secrets.ACCESS_TOKEN_SECRET != '' }}"
+          echo "API_SECRET is set: ${{ secrets.API_SECRET != '' }}"
+          echo "BEARER_TOKEN is set: ${{ secrets.BEARER_TOKEN != '' }}"
 
       - name: Run bot
         run: python bot.py
