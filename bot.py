@@ -1,29 +1,24 @@
 import tweepy
 import random
-import requests
-import os
 from datetime import datetime
+import sys
 
 print("=== Starting Trading Tweet Bot ===")
 
-# === Load secrets from environment variables ===
-API_KEY = os.environ.get("cWJJjZDOIzHfOGaIzuMq4uAtB")
-API_SECRET = os.environ.get("ydSXJ8c3WjFOhnp2Yjf99Hd0cgFlPZxIQbgUcf7e6rQb6DzFQM")
-ACCESS_TOKEN = os.environ.get("112135868-gOiEnrwm2RHnTdkUie95hoHMPOmcAYX2MembnQTb")
-ACCESS_TOKEN_SECRET = os.environ.get("lMFqn040P95Q6PzHu7XlQZxwo3jWLC74vbmG3HuVYiLW5")
-BEARER_TOKEN = os.environ.get("AAAAAAAAAAAAAAAAAAAAADBr3gEAAAAAtWkNuj9uHiea8Iy67YCHLQm44uA%3DP0KgD8RgDYJtAw7BT4C0DNsfqV5h9xWTLcCXnDNVnvgKkqJJyZ")
-
-# Debug: confirm secrets are loaded
-print("API_KEY loaded:", bool(API_KEY))
-print("API_SECRET loaded:", bool(API_SECRET))
-print("ACCESS_TOKEN loaded:", bool(ACCESS_TOKEN))
-print("ACCESS_TOKEN_SECRET loaded:", bool(ACCESS_TOKEN_SECRET))
-print("BEARER_TOKEN loaded:", bool(BEARER_TOKEN))
-
-# Stop if any secret is missing
-if not all([API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, BEARER_TOKEN]):
-    print("ERROR: One or more API keys are missing. Exiting.")
+# Load API keys from command-line arguments
+try:
+    API_KEY = sys.argv[1]
+    API_SECRET = sys.argv[2]
+    ACCESS_TOKEN = sys.argv[3]
+    ACCESS_TOKEN_SECRET = sys.argv[4]
+    BEARER_TOKEN = sys.argv[5]
+except IndexError:
+    print("ERROR: API keys not provided via command-line arguments. Exiting.")
     exit(1)
+
+# Debug: confirm keys are loaded
+print("API_KEY loaded:", bool(API_KEY))
+print("ACCESS_TOKEN loaded:", bool(ACCESS_TOKEN))
 
 # Authenticate with X API v2
 try:
