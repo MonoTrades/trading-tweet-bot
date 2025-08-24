@@ -1,32 +1,18 @@
-name: Trading Bot
+- name: Set up Python
+  uses: actions/setup-python@v4
+  with:
+    python-version: '3.10'
 
-on:
-  schedule:
-    - cron: "0 * * * *"   # every 1 hour
-  workflow_dispatch:       # manual run
+- name: Install dependencies
+  run: |
+    python -m pip install --upgrade pip
+    pip install -r requirements.txt
 
-jobs:
-  run-bot:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Run bot
-        run: python bot.py "$API_KEY" "$API_SECRET" "$ACCESS_TOKEN" "$ACCESS_TOKEN_SECRET" "$BEARER_TOKEN"
-        shell: bash
-        env:
-          API_KEY: ${{ secrets.API_KEY }}
-          API_SECRET: ${{ secrets.API_SECRET }}
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
+- name: Run bot
+  run: |
+    python bot.py \
+      ${{ secrets.API_KEY }} \
+      ${{ secrets.API_SECRET }} \
+      ${{ secrets.ACCESS_TOKEN }} \
+      ${{ secrets.ACCESS_TOKEN_SECRET }} \
+      ${{ secrets.BEARER_TOKEN }}
