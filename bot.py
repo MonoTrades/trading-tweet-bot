@@ -1,99 +1,149 @@
-import sys
 import tweepy
-import yfinance as yf
 import random
+import sys
+import yfinance as yf
 
-# === Get credentials from sys.argv ===
+# === Load credentials from sys.argv ===
+if len(sys.argv) < 6:
+    print("ERROR: Not enough arguments provided.")
+    sys.exit(1)
+
 API_KEY = sys.argv[1]
 API_SECRET = sys.argv[2]
 ACCESS_TOKEN = sys.argv[3]
 ACCESS_TOKEN_SECRET = sys.argv[4]
 BEARER_TOKEN = sys.argv[5]
 
-# === Auth with Tweepy ===
-auth = tweepy.OAuth1UserHandler(API_KEY, API_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-api = tweepy.API(auth)
+# Authenticate with X API v2
+client = tweepy.Client(
+    bearer_token=BEARER_TOKEN,
+    consumer_key=API_KEY,
+    consumer_secret=API_SECRET,
+    access_token=ACCESS_TOKEN,
+    access_token_secret=ACCESS_TOKEN_SECRET
+)
 
-# === Coins to cover ===
-coins = {
-    "BTC-USD": "Bitcoin",
-    "ETH-USD": "Ethereum",
-    "BNB-USD": "BNB",
-    "XRP-USD": "XRP",
-    "SOL-USD": "Solana",
-    "ADA-USD": "Cardano",
-    "DOGE-USD": "Dogecoin",
-    "AVAX-USD": "Avalanche",
-    "DOT-USD": "Polkadot",
-    "MATIC-USD": "Polygon",
-    # Meme coins
-    "SHIB-USD": "Shiba Inu",
-    "PEPE-USD": "Pepe",
-    "FLOKI-USD": "Floki",
-    "BONK-USD": "Bonk",
-    "WIF-USD": "Dogwifhat",
-    "TURBO-USD": "Turbo",
-    "DOG-USD": "The Dog",
-    "HOGE-USD": "Hoge Finance",
-    "ELON-USD": "Dogelon Mars",
-    "KISHU-USD": "Kishu Inu",
+# List of coins to analyze (Top 10 + Meme coins)
+coins = [
+    "BTC-USD", "ETH-USD", "BNB-USD", "SOL-USD", "XRP-USD",
+    "ADA-USD", "DOGE-USD", "AVAX-USD", "TRX-USD", "DOT-USD",
+    "SHIB-USD", "PEPE-USD", "FLOKI-USD", "BONK-USD", "WIF-USD",
+    "TURBO-USD", "MEME-USD", "DOG-USD", "CATE-USD", "BABYDOGE-USD"
+]
+
+# Map coin symbols to hashtag names
+coin_hashtags = {
+    "BTC-USD": "#BTC",
+    "ETH-USD": "#ETH",
+    "BNB-USD": "#BNB",
+    "SOL-USD": "#SOL",
+    "XRP-USD": "#XRP",
+    "ADA-USD": "#ADA",
+    "DOGE-USD": "#DOGE",
+    "AVAX-USD": "#AVAX",
+    "TRX-USD": "#TRX",
+    "DOT-USD": "#DOT",
+    "SHIB-USD": "#SHIB",
+    "PEPE-USD": "#PEPE",
+    "FLOKI-USD": "#FLOKI",
+    "BONK-USD": "#BONK",
+    "WIF-USD": "#WIF",
+    "TURBO-USD": "#TURBO",
+    "MEME-USD": "#MEME",
+    "DOG-USD": "#DOG",
+    "CATE-USD": "#CATE",
+    "BABYDOGE-USD": "#BABYDOGE"
 }
 
-# === Track which coin was last used (saved in a file) ===
-def get_next_coin():
+# Sentence templates for each sentiment
+bullish_phrases = [
+    "showing strong bullish momentum",
+    "buyers are in control",
+    "uptrend gaining steam",
+    "momentum is building",
+    "rallying higher",
+    "moving upward with strength",
+    "bouncing off support with buyers",
+    "upside pressure increasing",
+    "buyers pushing the price higher",
+    "trend is looking positive"
+]
+
+bearish_phrases = [
+    "showing weakness, possible correction",
+    "sellers taking control",
+    "downtrend continuing",
+    "pressure from bears",
+    "sliding lower",
+    "losing ground",
+    "resistance holding strong",
+    "falling back from highs",
+    "market leaning bearish",
+    "momentum fading"
+]
+
+neutral_phrases = [
+    "moving sideways, waiting for a breakout",
+    "trading in a tight range",
+    "consolidating",
+    "no clear direction yet",
+    "market is indecisive",
+    "price holding steady",
+    "choppy price action",
+    "waiting for a trend to form",
+    "bouncing between levels",
+    "range-bound movement"
+]
+
+# Generic hashtags to rotate
+generic_hashtags = ["#crypto", "#trading", "#markets", "#altcoins", "#blockchain", "#priceaction"]
+
+def analyze_coin(symbol):
     try:
-        with open("last_coin.txt", "r") as f:
-            last = f.read().strip()
-    except FileNotFoundError:
-        last = None
+        data = yf.download(symbol, period="2d", interval="1h", auto_adjust=True)
+        if data.empty or len(data) < 2:
+            return None
 
-    keys = list(coins.keys())
-    if last in keys:
-        idx = (keys.index(last) + 1) % len(keys)
-    else:
-        idx = 0
+        last_close = float(data["Close"].iloc[-1])
+        prev_close = float(data["Close"].iloc[-2])
+        change = (last_close - prev_close) / prev_close * 100
 
-    next_coin = keys[idx]
+        if change > 2:
+            sentiment = random.choice(bullish_phrases)
+        elif change < -2:
+            sentiment = random.choice(bearish_phrases)
+        else:
+            sentiment = random.choice(neutral_phrases)
 
-    with open("last_coin.txt", "w") as f:
-        f.write(next_coin)
+        coin_tag = coin_hashtags.get(symbol, "")
+        tags = " ".join(random.sample(generic_hashtags, 2)) + f" {coin_tag}"
 
-    return next_coin
+        return f"{symbol.replace('-USD','')} is {sentiment} (last close: ${last_close:.2f}, {change:+.2f}%) | {tags}"
+    except Exception:
+        return None
 
-# === Build analysis tweet ===
-def make_tweet(symbol, name):
-    data = yf.download(symbol, period="5d", interval="1h", auto_adjust=True)
-    if data.empty or len(data) < 2:
-        return f"{name} ({symbol}) data unavailable right now. 📉"
+def generate_trading_tweet():
+    random.shuffle(coins)
+    analyses = []
+    for coin in coins[:3]:  # Pick 3 random coins per tweet
+        result = analyze_coin(coin)
+        if result:
+            analyses.append(result)
 
-    # Get last two closing prices as scalars
-    latest_close = float(data["Close"].iloc[-1])
-    prev_close   = float(data["Close"].iloc[-2])
+    if not analyses:
+        return "Markets are quiet right now. Waiting for a clearer trend."
 
-    change = ((latest_close - prev_close) / prev_close) * 100
+    return " || ".join(analyses)
 
-    if change > 2:
-        outlook = f"{name} is looking bullish, up {change:.2f}% in the last hour. Buyers showing strength."
-    elif change < -2:
-        outlook = f"{name} is under pressure, down {change:.2f}% in the last hour. Bears taking control."
-    else:
-        outlook = f"{name} is pretty flat around ${latest_close}, waiting for a bigger move."
-
-    hashtags = ["#crypto", "#trading", "#markets", "#altcoins", "#bitcoin", "#blockchain"]
-    tags = " ".join(random.sample(hashtags, 2))
-
-    return f"{outlook}\n\nPrice: ${latest_close}\n{tags}"
-
-# === Run bot ===
-def run():
-    coin = get_next_coin()
-    tweet = make_tweet(coin, coins[coin])
-
+def post_tweet():
     try:
-        api.update_status(tweet)
-        print("Tweet posted:", tweet)
+        tweet_content = generate_trading_tweet()
+        response = client.create_tweet(text=tweet_content)
+        print("Tweet posted successfully: " + tweet_content)
+        return response
     except Exception as e:
-        print("Error posting tweet:", e)
+        print("Error posting tweet: " + str(e))
+        return None
 
 if __name__ == "__main__":
-    run()
+    post_tweet()
