@@ -62,27 +62,27 @@ def get_next_coin():
 
 # === Build analysis tweet ===
 def make_tweet(symbol, name):
-    data = yf.download(symbol, period="5d", interval="1h")
-    if data.empty:
+    data = yf.download(symbol, period="5d", interval="1h", auto_adjust=True)
+    if data.empty or len(data) < 2:
         return f"{name} ({symbol}) data unavailable right now. 📉"
 
-    latest = data.iloc[-1]
-    prev = data.iloc[-2]
+    # Get last two closing prices as scalars
+    latest_close = float(data["Close"].iloc[-1])
+    prev_close   = float(data["Close"].iloc[-2])
 
-    price = round(latest["Close"], 2)
-    change = ((latest["Close"] - prev["Close"]) / prev["Close"]) * 100
+    change = ((latest_close - prev_close) / prev_close) * 100
 
     if change > 2:
         outlook = f"{name} is looking bullish, up {change:.2f}% in the last hour. Buyers showing strength."
     elif change < -2:
         outlook = f"{name} is under pressure, down {change:.2f}% in the last hour. Bears taking control."
     else:
-        outlook = f"{name} is pretty flat around ${price}, waiting for a bigger move."
+        outlook = f"{name} is pretty flat around ${latest_close}, waiting for a bigger move."
 
     hashtags = ["#crypto", "#trading", "#markets", "#altcoins", "#bitcoin", "#blockchain"]
     tags = " ".join(random.sample(hashtags, 2))
 
-    return f"{outlook}\n\nPrice: ${price}\n{tags}"
+    return f"{outlook}\n\nPrice: ${latest_close}\n{tags}"
 
 # === Run bot ===
 def run():
