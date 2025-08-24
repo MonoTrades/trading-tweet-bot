@@ -1,10 +1,10 @@
-name: Trading Tweet Bot
+name: Crypto Trading Tweet Bot
 
 on:
   schedule:
-    # Runs every hour
+    # Runs every hour at minute 0
     - cron: "0 * * * *"
-  workflow_dispatch: # lets you trigger it manually from GitHub Actions
+  workflow_dispatch:
 
 jobs:
   run-bot:
@@ -17,18 +17,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          pip install tweepy yfinance pandas numpy
 
-      - name: Run bot
+      - name: Run trading tweet bot
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+          API_SECRET: ${{ secrets.API_SECRET }}
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+          BEARER_TOKEN: ${{ secrets.BEARER_TOKEN }}
         run: |
-          python bot.py \
-            "${{ secrets.API_KEY }}" \
-            "${{ secrets.API_SECRET }}" \
-            "${{ secrets.ACCESS_TOKEN }}" \
-            "${{ secrets.ACCESS_TOKEN_SECRET }}" \
-            "${{ secrets.BEARER_TOKEN }}"
+          python bot.py "$API_KEY" "$API_SECRET" "$ACCESS_TOKEN" "$ACCESS_TOKEN_SECRET" "$BEARER_TOKEN"
