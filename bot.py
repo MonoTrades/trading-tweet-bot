@@ -1,6 +1,8 @@
 import tweepy
 import random
 import sys
+import os
+import json
 
 # === Load credentials from sys.argv ===
 if len(sys.argv) < 6:
@@ -127,17 +129,49 @@ tips = [
     "Discipline + Patience = Long-term success."
 ]
 
-# === Dynamic hashtags ===
-hashtags = [
-    "#trading", "#stocks", "#crypto", "#daytrading", "#forex",
-    "#investing", "#marketnews", "#technicalanalysis", "#stockmarket",
-    "#bitcoin", "#altcoins", "#charting"
+# === Fixed hashtags (always included) ===
+fixed_tags = "#trading #crypto #btc"
+
+# === Extra hashtags for variety ===
+extra_hashtags = [
+    "#stocks", "#forex", "#daytrading", "#investing", "#marketnews",
+    "#technicalanalysis", "#stockmarket", "#altcoins", "#charting"
 ]
 
+# === State file to track unused tips ===
+state_file = "tips_state.json"
+
+def load_state():
+    if os.path.exists(state_file):
+        with open(state_file, "r") as f:
+            return json.load(f)
+    else:
+        # Start with all tips shuffled
+        shuffled = tips.copy()
+        random.shuffle(shuffled)
+        return {"remaining": shuffled}
+
+def save_state(state):
+    with open(state_file, "w") as f:
+        json.dump(state, f)
+
 def generate_tip_tweet():
-    tip = random.choice(tips)
-    chosen_tags = " ".join(random.sample(hashtags, 2))
-    return f"💡 Trading Tip: {tip}\n\n{chosen_tags}"
+    state = load_state()
+    remaining = state["remaining"]
+
+    if not remaining:  # if empty, reshuffle
+        remaining = tips.copy()
+        random.shuffle(remaining)
+
+    tip = remaining.pop(0)  # get next tip
+    state["remaining"] = remaining
+    save_state(state)
+
+    chosen_tags = ""
+    if len(extra_hashtags) >= 2:
+        chosen_tags = " ".join(random.sample(extra_hashtags, 2))
+
+    return f"💡 Trading Tip: {tip}\n\n{fixed_tags} {chosen_tags}"
 
 def post_tweet():
     try:
