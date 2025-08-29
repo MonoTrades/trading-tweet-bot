@@ -1,7 +1,6 @@
 import tweepy
 import random
 import sys
-import time
 
 # === Load credentials from sys.argv ===
 if len(sys.argv) < 6:
@@ -14,7 +13,7 @@ ACCESS_TOKEN = sys.argv[3]
 ACCESS_TOKEN_SECRET = sys.argv[4]
 BEARER_TOKEN = sys.argv[5]
 
-# Authenticate with X API v2
+# === Authenticate with Twitter API v2 ===
 client = tweepy.Client(
     bearer_token=BEARER_TOKEN,
     consumer_key=API_KEY,
@@ -24,138 +23,129 @@ client = tweepy.Client(
 )
 
 # === 100 Day Trading Tips ===
-day_trading_tips = [
-    "Always use a stop loss. Protecting capital is the #1 rule of trading.",
+tips = [
+    "Always use a stop loss to protect your capital.",
     "Never risk more than 1-2% of your account on a single trade.",
-    "Patience is a trader’s superpower. Don’t chase setups.",
-    "The trend is your friend until it ends. Trade with momentum.",
-    "Volume confirms price action. Pay attention to spikes.",
-    "Overtrading destroys accounts. Focus on quality setups only.",
-    "Cut losers fast, let winners run. Discipline beats emotion.",
-    "Don’t marry a trade. If it’s wrong, exit quickly.",
-    "Keep a trading journal. Reviewing trades improves performance.",
-    "Plan your trade and trade your plan — emotions are costly.",
-    "Avoid revenge trading. Step away after a big loss.",
-    "Trade with a clear mind. Don’t trade when emotional.",
-    "Set alerts to avoid staring at charts all day.",
-    "Focus on one or two strategies and master them.",
-    "Risk management is more important than winning rate.",
-    "Protecting capital is your first job as a trader.",
-    "Don’t add to losing trades hoping they’ll recover.",
-    "Good entries matter, but risk management matters more.",
-    "Use higher timeframes to confirm lower timeframe setups.",
-    "Avoid trading low-volume markets — liquidity matters.",
-    "Stick to your plan, not your feelings.",
-    "Discipline turns an average strategy into a profitable one.",
-    "Never chase price after a breakout. Wait for a retest.",
-    "Sideways markets can be dangerous. Wait for momentum.",
-    "News can create volatility — manage your risk during events.",
-    "Trading fewer setups often leads to better results.",
-    "Scalping requires precision. If unsure, step aside.",
-    "Don’t risk money you can’t afford to lose.",
-    "Stay consistent with your trading routine.",
-    "Don’t blindly follow others — trust your own analysis.",
-    "One big loss can erase weeks of gains. Protect capital.",
-    "Position sizing is as important as entries and exits.",
-    "Keep your charts clean. Too many indicators create noise.",
-    "Price action often tells you more than indicators.",
-    "Don’t overcomplicate your strategy. Simplicity wins.",
-    "Don’t let FOMO push you into bad trades.",
-    "Risk small, grow steady. Compounding wins over time.",
-    "Markets don’t owe you anything. Stay humble.",
-    "A missed trade is better than a forced trade.",
-    "Don’t double down on emotions — detach from results.",
-    "Small consistent gains compound into big profits.",
-    "Avoid trading out of boredom.",
-    "Treat trading like a business, not a lottery ticket.",
-    "Avoid trading during extremely low liquidity times.",
-    "Stick to your trading hours. Don’t chase after hours.",
-    "Understand the risk before thinking about the reward.",
-    "Don’t try to catch every move in the market.",
-    "Avoid trading when you’re tired or distracted.",
-    "Have both entry and exit rules before taking a trade.",
-    "The market will be there tomorrow. Don’t force today.",
-    "Master risk before chasing profits.",
-    "Focus on setups with a clear edge.",
-    "Every trade is just one of many — don’t get attached.",
-    "Don’t move your stop loss further away. Respect it.",
-    "Your edge comes from discipline, not prediction.",
-    "Learn to sit on your hands — no trade is a position too.",
-    "Don’t scale up too quickly. Build consistency first.",
-    "Avoid trading based on emotions like fear or greed.",
-    "Never average down a losing trade without a solid reason.",
-    "Trade less, think more.",
-    "Your first loss is your best loss. Don’t hold and hope.",
-    "Let the market come to you. Don’t chase.",
-    "The best setups usually feel the hardest to take.",
-    "Never assume the market will act rationally.",
-    "Avoid trading during major economic uncertainty if unprepared.",
-    "Adapt to market conditions — no single strategy works always.",
-    "When in doubt, stay out.",
-    "Patience is profitable. Wait for confirmation.",
-    "The market rewards discipline and punishes impatience.",
-    "Every trade should have a reason. No guessing.",
-    "Don’t get emotional over wins either. Stay balanced.",
-    "Take breaks. Clear mind = better trading.",
-    "Trading more doesn’t equal earning more.",
-    "Always know your risk-to-reward before entering a trade.",
-    "Don’t aim for perfection. Aim for consistency.",
-    "Follow your rules strictly. They exist to protect you.",
-    "Don’t let greed override logic.",
-    "If you break your rules, you break your edge.",
-    "Be comfortable with missing trades.",
-    "Focus on learning, not just earning, early on.",
-    "Don’t try to predict — react to what’s shown.",
-    "Review both winning and losing trades equally.",
-    "Avoid sudden emotional decisions during live trades.",
-    "The market is a marathon, not a sprint.",
-    "Be selective. Fewer trades, higher quality.",
-    "Don’t let a losing streak shake your confidence.",
-    "Trading is about probabilities, not certainties.",
-    "Stick to your stop loss no matter what.",
-    "Take partial profits if unsure.",
-    "Focus on process, not profits.",
-    "Avoid trading impulsively after big news.",
-    "Don’t let one bad day turn into a bad week.",
-    "Always know where you’re wrong before entering.",
-    "Respect risk first. Profits follow.",
-    "Trading success is built on consistency and discipline.",
-    "Think long term. A single trade won’t define you.",
-    "Keep your emotions out of position sizing.",
-    "Never let a winning trade turn into a losing one.",
-    "Stay disciplined when things are going well.",
-    "Never stop learning. Markets evolve, so should you."
+    "Avoid trading during low liquidity hours.",
+    "Stick to your trading plan — emotions kill profits.",
+    "Don’t chase trades. Wait for confirmation.",
+    "Use higher timeframes to confirm trends.",
+    "News events can cause extreme volatility — trade cautiously.",
+    "Overtrading is a fast way to drain your account.",
+    "Keep a trading journal to review mistakes.",
+    "Focus on risk management, not just profits.",
+    "Support and resistance levels are key decision zones.",
+    "Always check multiple timeframes before entering a trade.",
+    "Avoid revenge trading after a loss.",
+    "Patience is often more profitable than constant trading.",
+    "Cut your losses early, let winners run.",
+    "Use position sizing to manage risk properly.",
+    "Avoid over-leveraging, it magnifies losses.",
+    "Trading less can often mean making more.",
+    "Protect capital first, profits second.",
+    "Don’t rely on one strategy only — adapt.",
+    "Markets trend only 20-30% of the time, range the rest.",
+    "Keep charts clean — avoid indicator overload.",
+    "Price action often gives the clearest signal.",
+    "Avoid trading when you’re emotional or distracted.",
+    "Don’t let FOMO control your trades.",
+    "Scalping requires discipline and fast execution.",
+    "Swing trading requires patience and wider stops.",
+    "Backtest your strategy before using real money.",
+    "Risk/reward ratio should always favor reward.",
+    "Avoid trading against strong trends.",
+    "Learn to identify fake breakouts.",
+    "Volume confirms price action.",
+    "Don’t marry your trades — be flexible.",
+    "Avoid holding losing positions for hope.",
+    "Discipline is more important than a perfect strategy.",
+    "Trade the market you see, not what you think.",
+    "Avoid trading right before major news releases.",
+    "Be consistent with your strategy.",
+    "Protecting profits is just as important as making them.",
+    "Trade only liquid assets with tight spreads.",
+    "Focus on quality setups, not quantity.",
+    "Your edge comes from consistency and discipline.",
+    "Journal both wins and losses for patterns.",
+    "Trade small until you prove profitability.",
+    "Avoid copying others blindly — develop your style.",
+    "Markets are random in the short term, structured in the long term.",
+    "Don’t add to a losing position (averaging down is dangerous).",
+    "Learn from every trade, win or lose.",
+    "The best traders are great risk managers.",
+    "Break big goals into small, achievable steps.",
+    "Wait for high-probability setups, don’t force trades.",
+    "Trend is your friend, until it ends.",
+    "Take partial profits when the market allows.",
+    "Protecting your mindset is as important as capital.",
+    "Stay updated with global economic events.",
+    "Don’t let one trade ruin your account.",
+    "Markets will be here tomorrow — don’t rush.",
+    "Stick to pairs/coins you understand.",
+    "Technical and fundamental analysis together are stronger.",
+    "Don’t fight central bank policy in forex.",
+    "Always know your exit before you enter.",
+    "Consistency beats occasional big wins.",
+    "Use alerts to avoid staring at charts all day.",
+    "Don’t let greed push you to overtrade.",
+    "Hedging requires skill — avoid until experienced.",
+    "Risk small, but think big picture.",
+    "Protect your account during choppy markets.",
+    "Cutting losers quickly increases longevity.",
+    "Journal emotions along with trades.",
+    "Take breaks, avoid burnout.",
+    "Don’t let early success make you careless.",
+    "Each market has its own rhythm — learn it.",
+    "Plan the trade, trade the plan.",
+    "Every loss is tuition — learn from it.",
+    "Focus on process, not outcome.",
+    "Be patient with entries, aggressive with risk control.",
+    "A missed trade is better than a bad trade.",
+    "Avoid all-in bets — that’s gambling.",
+    "Diversify strategies, not just assets.",
+    "Never assume a trend will last forever.",
+    "Trade with the market, not against it.",
+    "Avoid trading under stress or fatigue.",
+    "Don’t compare your journey to others.",
+    "Overconfidence is dangerous after wins.",
+    "Keep learning — markets evolve.",
+    "Risk management is your survival tool.",
+    "Focus on mastering one strategy first.",
+    "Never double down on a bad trade.",
+    "The market doesn’t owe you anything.",
+    "Trading is a marathon, not a sprint.",
+    "Take small consistent gains over big risks.",
+    "Don’t let losses shake your discipline.",
+    "Risk comes first, profit comes second.",
+    "Be humble — markets punish arrogance.",
+    "Patience separates traders from gamblers.",
+    "Don’t confuse luck with skill.",
+    "Follow trends, don’t fight them.",
+    "Stay flexible — markets change daily.",
+    "Protect capital so you can trade tomorrow.",
+    "Only trade when conditions are clear.",
+    "Discipline + Patience = Long-term success."
 ]
 
-# === Hashtags to rotate ===
+# === Dynamic hashtags ===
 hashtags = [
-    "#trading", "#daytrading", "#priceaction", "#markets",
-    "#stocks", "#crypto", "#forex", "#riskmanagement", "#technicalanalysis"
+    "#trading", "#stocks", "#crypto", "#daytrading", "#forex",
+    "#investing", "#marketnews", "#technicalanalysis", "#stockmarket",
+    "#bitcoin", "#altcoins", "#charting"
 ]
-
-# Shuffle tips so they’re unique each run
-remaining_tips = random.sample(day_trading_tips, len(day_trading_tips))
 
 def generate_tip_tweet():
-    global remaining_tips
-    if not remaining_tips:  # Refill when exhausted
-        remaining_tips = random.sample(day_trading_tips, len(day_trading_tips))
-    tip = remaining_tips.pop()
-    tags = " ".join(random.sample(hashtags, 2))
-    return f"Day Trading Tip: {tip} {tags}"
+    tip = random.choice(tips)
+    chosen_tags = " ".join(random.sample(hashtags, 2))
+    return f"💡 Trading Tip: {tip}\n\n{chosen_tags}"
 
 def post_tweet():
     try:
         tweet_content = generate_tip_tweet()
-        response = client.create_tweet(text=tweet_content)
+        client.create_tweet(text=tweet_content)
         print("Tweet posted successfully:", tweet_content)
-        return response
     except Exception as e:
-        print("Error posting tweet:", str(e))
-        return None
+        print("Error posting tweet:", e)
 
-# === Auto post every 3 hours ===
 if __name__ == "__main__":
-    while True:
-        post_tweet()
-        time.sleep(3 * 60 * 60)  # 3 hours
+    post_tweet()
