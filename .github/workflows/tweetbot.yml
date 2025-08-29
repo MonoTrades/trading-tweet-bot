@@ -3,7 +3,7 @@ name: Trading Tweet Bot
 on:
   schedule:
     # Runs every hour
-    - cron: "0 * * * *"
+    - cron: "0 */3 * * *"
   workflow_dispatch: # lets you trigger it manually from GitHub Actions
 
 jobs:
